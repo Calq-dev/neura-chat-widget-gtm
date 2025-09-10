@@ -1,4 +1,4 @@
-___TERMS_OF_SERVICE___
+﻿___TERMS_OF_SERVICE___
 
 By creating or modifying this file you agree to Google Tag Manager's Community
 Template Gallery Developer Terms of Service available at
@@ -14,7 +14,11 @@ ___INFO___
   "version": 1,
   "securityGroups": [],
   "displayName": "NeuraChat",
-  "categories": ["CHAT", "LEAD_GENERATION", "MARKETING"],
+  "categories": [
+    "CHAT",
+    "LEAD_GENERATION",
+    "MARKETING"
+  ],
   "brand": {
     "id": "brand_dummy",
     "displayName": "",
@@ -117,45 +121,63 @@ ___TEMPLATE_PARAMETERS___
 
 ___SANDBOXED_JS_FOR_WEB_TEMPLATE___
 
-const injectScript = require('injectScript');
 const callInWindow = require('callInWindow');
+const copyFromWindow = require('copyFromWindow');
+const injectScript = require('injectScript');
+const logger = require('logToConsole');
 
-var widgetId = data.widgetId;
-var mode = data.mode || 'bubble';
-var position = (data.position === 'left' || data.position === 'right') ? data.position : 'right';
-var elementId = data.elementId;
-var scriptUrl = 'https://unpkg.com/@calq/neura-chat-widget@latest/dist/widget.js';
+const scriptUrl = 'https://unpkg.com/@calq/neura-chat-widget@latest/dist/widget.js';
+const widgetId = data.widgetId;
+const mode = data.mode || 'bubble';
+const position = (data.position === 'left' || data.position === 'right') ? data.position : 'right';
+const elementId = data.elementId;
+const NeuraChat = copyFromWindow('NeuraChat');
+
+const initWidget = () => {
+  if (mode === 'inline') {
+    callInWindow('NeuraChat.createInlineWidget', {
+      widgetId: widgetId,
+      element: elementId
+    });
+  } else {
+    callInWindow('NeuraChat.createBubbleWidget', {
+      widgetId: widgetId,
+      position: position
+    });
+  }
+  
+  return handleSuccess();
+};
+
+const handleSuccess = () => {
+   return data.gtmOnSuccess(); 
+};
+
+const handleFailure = (msg) => {
+  let errorMessage = 'NeuraChat Widget GTM error';
+  
+  if (msg) {
+    errorMessage = errorMessage + ": " + msg;
+  }
+  
+  logger(errorMessage);
+  
+  return data.gtmOnFailure();
+};
 
 if (!widgetId) {
-  data.gtmOnFailure('Missing required field: Widget ID');
-  return;
+  return handleFailure('Missing required field: Widget ID');
 }
 
 if (mode === 'inline' && !elementId) {
-  data.gtmOnFailure('Element ID is required when Mode is "Inline".');
-  return;
+  return handleFailure('Element ID is required when Mode is "Inline".');
 }
 
-injectScript(
-  scriptUrl,
-  function onLoad() {
-    if (mode === 'inline') {
-      callInWindow('NeuraChat.createInlineWidget', {
-        widgetId: widgetId,
-        element: elementId
-      });
-    } else {
-      callInWindow('NeuraChat.createBubbleWidget', {
-        widgetId: widgetId,
-        position: position
-      });
-    }
-    data.gtmOnSuccess();
-  },
-  function onError() {
-    data.gtmOnFailure('Failed to load Neura Chat widget script: ' + scriptUrl);
-  }
-);
+if (!NeuraChat) {
+  injectScript(scriptUrl, initWidget, handleFailure, 'NeuraChat');
+} else {
+  return handleSuccess();
+}
 
 
 ___WEB_PERMISSIONS___
@@ -167,7 +189,136 @@ ___WEB_PERMISSIONS___
         "publicId": "access_globals",
         "versionId": "1"
       },
-      "param": []
+      "param": [
+        {
+          "key": "keys",
+          "value": {
+            "type": 2,
+            "listItem": [
+              {
+                "type": 3,
+                "mapKey": [
+                  {
+                    "type": 1,
+                    "string": "key"
+                  },
+                  {
+                    "type": 1,
+                    "string": "read"
+                  },
+                  {
+                    "type": 1,
+                    "string": "write"
+                  },
+                  {
+                    "type": 1,
+                    "string": "execute"
+                  }
+                ],
+                "mapValue": [
+                  {
+                    "type": 1,
+                    "string": "NeuraChat"
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  }
+                ]
+              },
+              {
+                "type": 3,
+                "mapKey": [
+                  {
+                    "type": 1,
+                    "string": "key"
+                  },
+                  {
+                    "type": 1,
+                    "string": "read"
+                  },
+                  {
+                    "type": 1,
+                    "string": "write"
+                  },
+                  {
+                    "type": 1,
+                    "string": "execute"
+                  }
+                ],
+                "mapValue": [
+                  {
+                    "type": 1,
+                    "string": "NeuraChat.createInlineWidget"
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  }
+                ]
+              },
+              {
+                "type": 3,
+                "mapKey": [
+                  {
+                    "type": 1,
+                    "string": "key"
+                  },
+                  {
+                    "type": 1,
+                    "string": "read"
+                  },
+                  {
+                    "type": 1,
+                    "string": "write"
+                  },
+                  {
+                    "type": 1,
+                    "string": "execute"
+                  }
+                ],
+                "mapValue": [
+                  {
+                    "type": 1,
+                    "string": "NeuraChat.createBubbleWidget"
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "clientAnnotations": {
+      "isEditedByUser": true
     },
     "isRequired": true
   },
@@ -194,6 +345,24 @@ ___WEB_PERMISSIONS___
     },
     "clientAnnotations": {
       "isEditedByUser": true
+    },
+    "isRequired": true
+  },
+  {
+    "instance": {
+      "key": {
+        "publicId": "logging",
+        "versionId": "1"
+      },
+      "param": [
+        {
+          "key": "environments",
+          "value": {
+            "type": 1,
+            "string": "debug"
+          }
+        }
+      ]
     },
     "isRequired": true
   }
