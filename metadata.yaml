@@ -1,6 +1,5 @@
 homepage: "https://neurachat.ai"
 documentation: "https://github.com/Calq-dev/neura-chat-widget-gtm/blob/main/README.md"
 versions:
-  # Latest release
-  - sha: 882104120a6dfffecbcabb41ee0a6271ec19a3f2
-    changeNotes: Initial release.
+  - sha: 7a4f9a3160cf7e670d8bb202a4430fe708a0f13b
+    changeNotes: Initial release
